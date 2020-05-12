@@ -54,10 +54,6 @@ class _PriceScreenState extends State<PriceScreen> {
   NotificationListener iosPicker() {
     return NotificationListener<ScrollEndNotification>(
       onNotification: (ScrollEndNotification notification) {
-        FixedExtentMetrics metrics = notification.metrics;
-        setState(() {
-          selectedCurrency = coinData.currenciesList[metrics.itemIndex];
-        });
         calculateConversionRates(selectedCurrency);
         return true;
       },
@@ -65,6 +61,7 @@ class _PriceScreenState extends State<PriceScreen> {
         onSelectedItemChanged: (value) {
           setState(() {
             conversionRates = null;
+            selectedCurrency = coinData.currenciesList[value];
           });
         },
         scrollController: FixedExtentScrollController(
