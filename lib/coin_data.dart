@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 const List<String> currenciesList = [
   'AUD',
   'BRL',
@@ -28,4 +30,11 @@ const List<String> cryptoList = [
   'LTC',
 ];
 
-class CoinData {}
+class CoinData {
+  Future<double> getConversionRate(
+      {@required String crypto, @required String currency}) async {
+    double conversionRate = 888.00;
+
+    return conversionRate;
+  }
+}

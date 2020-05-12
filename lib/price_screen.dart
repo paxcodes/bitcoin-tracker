@@ -1,16 +1,20 @@
 import 'dart:io' show Platform;
+import 'package:bitcoin_ticker/conversion_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bitcoin_ticker/coin_data.dart' as coinData;
 
 class PriceScreen extends StatefulWidget {
+  final coinData.CoinData coinHelper = coinData.CoinData();
+
   @override
   _PriceScreenState createState() => _PriceScreenState();
 }
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
+  double conversionRate;
 
   DropdownButton androidDropdown() {
     return DropdownButton<String>(
@@ -33,7 +37,9 @@ class _PriceScreenState extends State<PriceScreen> {
     return NotificationListener<ScrollEndNotification>(
       onNotification: (ScrollEndNotification notification) {
         FixedExtentMetrics metrics = notification.metrics;
-        print(metrics.itemIndex);
+        setState(() {
+          selectedCurrency = coinData.currenciesList[metrics.itemIndex];
+        });
         return true;
       },
       child: CupertinoPicker(
@@ -43,6 +49,24 @@ class _PriceScreenState extends State<PriceScreen> {
             coinData.currenciesList.map((currency) => Text(currency)).toList(),
       ),
     );
+  }
+
+  String _printConversionRate() {
+    if (conversionRate != null) {
+      return "${conversionRate.toStringAsFixed(2)}";
+    }
+    return "?";
+  }
+
+  Future<void> getConversionRates() async {
+    conversionRate = await widget.coinHelper
+        .getConversionRate(crypto: 'BTC', currency: 'USD');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getConversionRates();
   }
 
   @override
@@ -55,26 +79,10 @@ class _PriceScreenState extends State<PriceScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = ? USD',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+          ConversionCard(
+            currency: selectedCurrency,
+            cryptocurrency: 'BTC',
+            value: _printConversionRate(),
           ),
           Container(
             height: 150.0,
