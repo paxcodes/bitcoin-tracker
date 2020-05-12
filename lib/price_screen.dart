@@ -3,7 +3,7 @@ import 'package:bitcoin_ticker/conversion_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:bitcoin_ticker/coin_data.dart' as coinData;
+import 'package:bitcoin_ticker/services/coin_data.dart' as coinData;
 
 class PriceScreen extends StatefulWidget {
   final coinData.CoinData coinHelper = coinData.CoinData();
