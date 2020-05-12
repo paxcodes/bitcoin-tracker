@@ -1,5 +1,5 @@
 import 'dart:io' show Platform;
-import 'package:bitcoin_ticker/conversion_card.dart';
+import 'package:bitcoin_ticker/components/conversion_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
