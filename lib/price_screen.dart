@@ -51,6 +51,8 @@ class _PriceScreenState extends State<PriceScreen> {
       },
       child: CupertinoPicker(
         onSelectedItemChanged: (value) {},
+        scrollController: FixedExtentScrollController(
+            initialItem: coinData.currenciesList.indexOf(selectedCurrency)),
         backgroundColor: Colors.lightBlue,
         itemExtent: 32,
         children:
