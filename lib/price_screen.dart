@@ -14,7 +14,7 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
-  double conversionRate;
+  Map<String, double> conversionRates;
 
   DropdownButton androidDropdown() {
     return DropdownButton<String>(
@@ -34,11 +34,17 @@ class _PriceScreenState extends State<PriceScreen> {
   }
 
   Future<void> calculateConversionRates(String currency) async {
-    double rate = await widget.coinHelper
-        .getConversionRate(crypto: 'BTC', currency: currency);
+    Map<String, double> rates = {};
+    double rate;
+    for (String crypto in coinData.cryptoList) {
+      rate = await widget.coinHelper
+          .getConversionRate(crypto: crypto, currency: currency);
+      rates[crypto] = rate;
+    }
+
     setState(() {
       selectedCurrency = currency;
-      conversionRate = rate;
+      conversionRates = rates;
     });
   }
 
@@ -61,11 +67,23 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
-  String _printConversionRate() {
-    if (conversionRate != null) {
-      return "${conversionRate.toStringAsFixed(2)}";
+  String _printConversionRate(String crypto) {
+    if (conversionRates != null) {
+      return "${conversionRates[crypto].toStringAsFixed(2)}";
     }
     return "?";
+  }
+
+  List<Widget> _getConversionCards() {
+    return coinData.cryptoList
+        .map<Widget>(
+          (crypto) => ConversionCard(
+            currency: selectedCurrency,
+            cryptocurrency: crypto,
+            value: _printConversionRate(crypto),
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -83,20 +101,16 @@ class _PriceScreenState extends State<PriceScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          ConversionCard(
-            currency: selectedCurrency,
-            cryptocurrency: 'BTC',
-            value: _printConversionRate(),
-          ),
-          Container(
-            height: 150.0,
-            alignment: Alignment.center,
-            padding: EdgeInsets.only(bottom: 30.0),
-            color: Colors.lightBlue,
-            child: Platform.isIOS ? iosPicker() : androidDropdown(),
-          ),
-        ],
+        children: _getConversionCards() +
+            <Widget>[
+              Container(
+                height: 150.0,
+                alignment: Alignment.center,
+                padding: EdgeInsets.only(bottom: 30.0),
+                color: Colors.lightBlue,
+                child: Platform.isIOS ? iosPicker() : androidDropdown(),
+              ),
+            ],
       ),
     );
   }
