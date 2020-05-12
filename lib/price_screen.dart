@@ -33,13 +33,20 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
+  Future<void> calculateConversionRates(String currency) async {
+    double rate = await widget.coinHelper
+        .getConversionRate(crypto: 'BTC', currency: currency);
+    setState(() {
+      selectedCurrency = currency;
+      conversionRate = rate;
+    });
+  }
+
   NotificationListener iosPicker() {
     return NotificationListener<ScrollEndNotification>(
       onNotification: (ScrollEndNotification notification) {
         FixedExtentMetrics metrics = notification.metrics;
-        setState(() {
-          selectedCurrency = coinData.currenciesList[metrics.itemIndex];
-        });
+        calculateConversionRates(coinData.currenciesList[metrics.itemIndex]);
         return true;
       },
       child: CupertinoPicker(
@@ -59,15 +66,10 @@ class _PriceScreenState extends State<PriceScreen> {
     return "?";
   }
 
-  Future<void> getConversionRates() async {
-    conversionRate = await widget.coinHelper
-        .getConversionRate(crypto: 'BTC', currency: 'USD');
-  }
-
   @override
   void initState() {
     super.initState();
-    getConversionRates();
+    calculateConversionRates(selectedCurrency);
   }
 
   @override

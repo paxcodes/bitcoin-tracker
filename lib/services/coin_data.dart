@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 const List<String> currenciesList = [
   'AUD',
@@ -31,10 +35,18 @@ const List<String> cryptoList = [
 ];
 
 class CoinData {
+  String apiUrl = "https://rest.coinapi.io/v1";
+  String apiKey;
+
+  CoinData() {
+    apiKey = DotEnv().env['COINAPI_APIKEY'];
+  }
+
   Future<double> getConversionRate(
       {@required String crypto, @required String currency}) async {
-    double conversionRate = 888.00;
-
-    return conversionRate;
+    http.Response response =
+        await http.get("$apiUrl/exchangerate/$crypto/$currency?apiKey=$apiKey");
+    dynamic data = jsonDecode(response.body);
+    return data['rate'];
   }
 }
