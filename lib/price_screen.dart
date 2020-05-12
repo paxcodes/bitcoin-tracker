@@ -29,15 +29,19 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
-  CupertinoPicker iosPicker() {
-    return CupertinoPicker(
-      backgroundColor: Colors.lightBlue,
-      itemExtent: 32,
-      onSelectedItemChanged: (selectedIndex) {
-        print(selectedIndex);
+  NotificationListener iosPicker() {
+    return NotificationListener<ScrollEndNotification>(
+      onNotification: (ScrollEndNotification notification) {
+        FixedExtentMetrics metrics = notification.metrics;
+        print(metrics.itemIndex);
+        return true;
       },
-      children:
-          coinData.currenciesList.map((currency) => Text(currency)).toList(),
+      child: CupertinoPicker(
+        backgroundColor: Colors.lightBlue,
+        itemExtent: 32,
+        children:
+            coinData.currenciesList.map((currency) => Text(currency)).toList(),
+      ),
     );
   }
 
