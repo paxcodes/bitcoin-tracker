@@ -27,7 +27,7 @@ class _PriceScreenState extends State<PriceScreen> {
           .toList(),
       onChanged: (value) {
         setState(() {
-          selectedCurrency = value;
+          calculateConversionRates(value);
         });
       },
     );
