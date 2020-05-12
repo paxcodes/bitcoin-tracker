@@ -27,6 +27,10 @@ class _PriceScreenState extends State<PriceScreen> {
           .toList(),
       onChanged: (value) {
         setState(() {
+          setState(() {
+            selectedCurrency = value;
+            conversionRates = null;
+          });
           calculateConversionRates(value);
         });
       },
@@ -43,7 +47,6 @@ class _PriceScreenState extends State<PriceScreen> {
     }
 
     setState(() {
-      selectedCurrency = currency;
       conversionRates = rates;
     });
   }
@@ -52,11 +55,18 @@ class _PriceScreenState extends State<PriceScreen> {
     return NotificationListener<ScrollEndNotification>(
       onNotification: (ScrollEndNotification notification) {
         FixedExtentMetrics metrics = notification.metrics;
-        calculateConversionRates(coinData.currenciesList[metrics.itemIndex]);
+        setState(() {
+          selectedCurrency = coinData.currenciesList[metrics.itemIndex];
+        });
+        calculateConversionRates(selectedCurrency);
         return true;
       },
       child: CupertinoPicker(
-        onSelectedItemChanged: (value) {},
+        onSelectedItemChanged: (value) {
+          setState(() {
+            conversionRates = null;
+          });
+        },
         scrollController: FixedExtentScrollController(
             initialItem: coinData.currenciesList.indexOf(selectedCurrency)),
         backgroundColor: Colors.lightBlue,
